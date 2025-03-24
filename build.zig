@@ -28,43 +28,43 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&run_library_tests.step);
 
     // C library
-    const staticLib = b.addStaticLibrary(.{
-        .name = "regex",
-        .root_source_file = path(b, "src/c_regex.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-    staticLib.linkLibC();
+    // const staticLib = b.addStaticLibrary(.{
+    //     .name = "regex",
+    //     .root_source_file = path(b, "src/c_regex.zig"),
+    //     .target = target,
+    //     .optimize = optimize,
+    // });
+    // staticLib.linkLibC();
 
-    b.installArtifact(staticLib);
+    // b.installArtifact(staticLib);
 
-    const sharedLib = b.addSharedLibrary(.{
-        .name = "regex",
-        .root_source_file = path(b, "src/c_regex.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-    sharedLib.linkLibC();
+    // const sharedLib = b.addSharedLibrary(.{
+    //     .name = "regex",
+    //     .root_source_file = path(b, "src/c_regex.zig"),
+    //     .target = target,
+    //     .optimize = optimize,
+    // });
+    // sharedLib.linkLibC();
 
-    b.installArtifact(sharedLib);
+    // b.installArtifact(sharedLib);
 
     // C example
-    const c_example = b.addExecutable(.{
-        .name = "example",
-        .target = target,
-        .optimize = optimize,
-    });
-    c_example.addCSourceFile(.{
-        .file = path(b, "example/example.c"),
-        .flags = &.{"-Wall"},
-    });
-    c_example.addIncludePath(path(b, "include"));
-    c_example.linkLibC();
-    c_example.linkLibrary(staticLib);
+    // const c_example = b.addExecutable(.{
+    //     .name = "example",
+    //     .target = target,
+    //     .optimize = optimize,
+    // });
+    // c_example.addCSourceFile(.{
+    //     .file = path(b, "example/example.c"),
+    //     .flags = &.{"-Wall"},
+    // });
+    // c_example.addIncludePath(path(b, "include"));
+    // c_example.linkLibC();
+    // c_example.linkLibrary(staticLib);
 
-    const c_example_step = b.step("c-example", "Example using C API");
-    c_example_step.dependOn(&staticLib.step);
-    c_example_step.dependOn(&c_example.step);
+    // const c_example_step = b.step("c-example", "Example using C API");
+    // c_example_step.dependOn(&staticLib.step);
+    // c_example_step.dependOn(&c_example.step);
 
     b.default_step.dependOn(test_step);
 }

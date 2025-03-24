@@ -1,5 +1,6 @@
 .{
-    .name = "regex",
+    .name = .regex,
+    .fingerprint = 0x4204f8cae369f894,
     .version = "0.1.2",
     .minimum_zig_version = "0.11.0",
     .paths = .{""},

@@ -303,7 +303,11 @@ pub const Parser = struct {
             return error.StackUnderflow;
         }
 
-        return p.stack.pop();
+        if (p.stack.pop()) |elem| {
+            return elem;
+        } else {
+            return error.StackUnderflow;
+        }
     }
 
     fn popByteClass(p: *Parser) !*Expr {
@@ -415,7 +419,8 @@ pub const Parser = struct {
                             return error.UnopenedParentheses;
                         }
 
-                        const e = p.stack.pop();
+                        // const e = p.stack.pop();
+                        const e = try p.popStack();
                         switch (e.*) {
                             // Existing alternation
                             .Alternate => {
@@ -436,7 +441,7 @@ pub const Parser = struct {
                                 }
 
                                 // pop the left parentheses that must now exist
-                                debug.assert(p.stack.pop().* == Expr.PseudoLeftParen);
+                                debug.assert(p.stack.pop().?.* == Expr.PseudoLeftParen);
 
                                 const r = try p.createExpr();
                                 r.* = Expr{ .Capture = e };
@@ -502,7 +507,8 @@ pub const Parser = struct {
                             break;
                         }
 
-                        const e = p.stack.pop();
+                        // const e = p.stack.pop();
+                        const e = try p.popStack();
                         switch (e.*) {
                             // Existing alternation, combine
                             .Alternate => {
@@ -577,7 +583,8 @@ pub const Parser = struct {
 
         // special case single item to avoid top-level concat for simple.
         if (p.stack.items.len == 1) {
-            return p.stack.pop();
+            // return p.stack.pop();
+            return try p.popStack();
         }
 
         // finish a concatenation result
@@ -608,7 +615,8 @@ pub const Parser = struct {
             }
 
             // pop an item, check if it is an alternate and not a pseudo left paren
-            const e = p.stack.pop();
+            // const e = p.stack.pop();
+            const e = try p.popStack();
             switch (e.*) {
                 .PseudoLeftParen => {
                     return error.UnclosedParentheses;
@@ -629,7 +637,8 @@ pub const Parser = struct {
 
                     // if stack is not empty, this is an error
                     if (p.stack.items.len != 0) {
-                        switch (p.stack.pop().*) {
+                        const stackTop = try p.popStack();
+                        switch (stackTop.*) {
                             .PseudoLeftParen => return error.UnclosedParentheses,
                             else => unreachable,
                         }
